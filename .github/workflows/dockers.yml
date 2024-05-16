@@ -1,6 +1,7 @@
 name: Docker image and tests
 
 on:
+  push:
   release:
     types: [ published ]
   workflow_dispatch:
@@ -69,11 +70,12 @@ jobs:
           platforms: linux/arm64/v8,linux/amd64
           file: docker/Dockerfile.latest_release
           tags: ${{ steps.meta_github.outputs.tags }}
-          push: true
+          push: ${{ github.event_name != 'push' }}
 
   test-docker-image:
     needs: docker-image
     runs-on: ubuntu-latest
+    if: github.event_name != 'push'
     steps:
       - uses: actions/checkout@v4
       - name: Set up Python 3.9
